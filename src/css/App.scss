@@ -1,0 +1,356 @@
+@import './default.scss';
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    background-color: $bg;
+}
+
+#root {
+    display: flex;
+    flex-direction: row;
+    float: left;
+    min-height: 100%;
+}
+
+.navigation-bar {
+    position: relative;
+    width: 9.5em;
+    display: flex;
+    flex-direction: column;
+    font-family: $font-family;
+    font-weight: $normal-weight;
+    background-color: $dark-bg;
+    color: $text-color;
+
+    .logo {
+        width: 7em;
+        height: 7em;
+    }
+
+    .username {
+        font-size: $big-size;
+        font-weight: $bold-weight;
+        padding-bottom: 2.5em;
+    }
+
+    > * + * {
+        padding-left: 1em;
+    }
+
+    .menu-bar ul {
+        padding-bottom: 2.5em;
+    }
+
+    /* make this responsive to the viewport */  
+    footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding-bottom: 1em;
+        font-weight: $light-weight;
+        font-size: $small-size;
+
+        li {
+            list-style-type: none;
+            bottom: 0;
+
+            ul {
+                padding-top: 0.5em;
+            }
+        }
+    }
+
+    ul {
+        cursor: pointer;
+        .menu-icon {
+            padding-right: $icon-padding;
+        }
+    }
+
+    .sub-menu {
+        display: none;
+        position: absolute;
+        left: 9.5em;
+        width: 20em;
+        height: 100%;
+        background-color: $dark-bg;
+        filter: brightness(90%);
+        padding: 0;
+
+        .sub-menu-component {
+            padding-top: 1em;
+            > * {
+                padding-left: 1em;
+                padding-top: 0.5em;
+                margin-bottom: 0.5em;
+                
+                svg {
+                    padding-right: 0.5em;
+                }
+            }
+            
+            > div + div {
+                cursor: pointer;
+            }
+
+            .horizontal-line {
+                cursor: default;
+
+                margin: 0.5em 0;
+                padding: 0;
+                border: #726755 solid;
+                border-width: 2px;
+            }
+
+            > .sub-menu-request {
+                padding: 0;
+                margin: 0;
+
+                > .sub-menu-request-header {
+                    padding-left: 1em;
+                }
+
+                > .sub-menu-request-body {
+                    > div {
+                        padding-top: 0.5em;
+                        padding-left: 2em;
+                        padding-bottom: 0.2em;
+                    }
+
+                    > div {
+                        font-size: 90%;
+                        padding-left: 3em;
+                        font-weight: normal;
+                    }
+                }
+            }
+        }
+
+        .sub-menu-game {
+            .sub-menu-request-component {
+                display: flex;
+                flex-direction: row;
+                margin-top:0.5em;
+                align-items: center;
+
+                >  * {
+                    margin-right: 0.3em;
+                }
+                
+                svg {
+                    font-size: 150%;
+                }
+
+                > div {
+                    font-family: $font-family;
+                    color: $text-color;
+                    font-weight: $normal-weight;
+
+                    > span {
+                        color: gray;
+                    }
+                }
+
+                .sub-menu-request-icon {
+                    padding-left: 0.5em;
+
+                    > * {
+                        padding-right: 0.3em;
+                        cursor: pointer;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.main-component {
+    display: flex;
+    flex: 1;
+    height: 40em;
+}
+
+
+#board-container {
+    margin-top: 2em;
+    margin-right: 2em;
+    width: 40em;
+    height: 100%;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding-left: 8em;
+
+    .chessboard {
+        display: flex;
+        height: 90%;
+        flex-direction: row;
+    }
+
+    .user-container {
+        height: 8%;
+        min-height: fit-content;
+        display: flex;
+        align-items: center;
+        font-family: $font-family;
+        color: $text-color;
+        font-weight: $normal-weight;
+        width: 90%;
+
+        .user-icon {
+            padding-right: $icon-padding;
+            padding-left: 0.5em;
+            font-size: 150%;
+        }
+    }
+}
+
+#sidebar {
+    margin-top: 2em;
+    height: 100%;
+    border-radius: $round-border;
+    background-color: $dark-bg;
+    border-collapse: separate;
+
+    .upper {
+        display: flex;
+        flex-direction: column;
+        font-family: system-ui, Arial;
+        font-weight: 600;
+        font-size: 90%;
+        letter-spacing: 1px;
+        color: white;
+        width: 30em;
+        height: 24.25em;
+        border: solid #726755;
+        border-width: 0 0 0.25em 0;
+        height: 60%;
+        
+        .upper-top {
+            display: flex;
+            height: 10%;
+            align-items: center;
+            padding-left: 1.5em;
+            padding-top: 0.5em;
+            padding-bottom: 0.5em;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            border: solid #726755;
+            border-width: 0 0 0.25em 0;
+        }
+    }
+
+    .chat {
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        font-family: system-ui, Arial;
+        font-weight: $lighter-weight;
+        font-size: 85%; 
+        color: white;
+        height: 40%;
+
+        .chat-output {
+            height: 80%;
+            padding-left: 1.5em;
+            overflow-y: auto;
+            padding-bottom: 1em;
+            display: flex;
+            flex-direction: column-reverse;
+            
+            .game-info {
+                margin-top: 1em;
+                margin-bottom: auto;
+                font-weight: $normal-weight;
+            }
+            
+            .message-container {
+                * {
+                    padding-top: 0.5em;
+                }
+            }
+        }
+    
+        .chat-input {
+            height: 20%;
+
+            input {
+                height: 100%;
+                width: 100%;
+                overflow-x: auto;
+                background-color: #312e2b;
+                font-family: system-ui, Arial;
+                font-weight: 700px;
+                font-size: 100%;
+                color: white;
+                border: solid $dark-bg;
+                border-width: 0 0 0.1em 0;
+                border-bottom-left-radius: 15px;
+                border-bottom-right-radius: 15px;
+                text-indent: 1.5em;
+            }
+        
+            input:focus {
+                outline: none;
+            }
+        }
+    }
+}
+
+.request-pop-up-container {
+    position: fixed;
+    bottom: 5vh;
+    right: 5vw;
+}
+
+.pop-up-request-component {
+    padding: 0.5em;
+    margin-top: 0.7em;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+    border: solid #504A4B;
+    border-radius: 10px;
+    border-width: 0.2em;
+
+    font-family: $font-family;
+    color: $text-color;
+    font-weight: $normal-weight;
+
+    background-color: #302e2b;
+
+    .pop-up-avatar {
+        margin-left: 0.3em;
+        margin-right: 0.5em;
+        padding: 0.2em;
+        font-size: 150%;
+        background-color: #474542;
+    }
+
+    .pop-up-info {
+        span {
+            color: gray;
+        }
+
+        padding-right: 0.5em;
+    }
+
+    .action-icon {
+        font-size: 150%;
+
+        svg {
+            cursor: pointer;
+        }
+
+        > * + *{
+            margin-left: 0.3em;
+        }
+    }
+}

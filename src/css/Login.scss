@@ -1,0 +1,140 @@
+@import './default.scss';
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.background {
+    background-image: url('../../public/assets/poster.jpg');
+    width: 100vw;
+    height: 100vh;
+    background-size: 100vw 100vh;
+
+    display: flex;
+    align-items: center;
+
+}
+
+.login-form {
+    margin-left: 5em;
+    margin-top: auto;
+    margin-bottom: auto;
+
+    width: 30em;
+    height: 30em;
+
+    border-radius: 15px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    background-color: $bg;
+
+    * {
+        font-family: $font-family;
+        color: $text-color;
+        font-weight: $bold-weight;
+    }
+    
+    > * {
+        width: 25em;
+    }
+
+    > * + * {
+        margin-bottom: 1.5em;
+        border-radius: 5px;
+    }
+    
+    .chess-logo {
+        height: 8em;
+        width: 8em;
+    }
+    
+    .input-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 2.5em;
+        border-radius: 5px;
+        background-color: $dark-bg;
+    }
+
+    .input-container > .logo {
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        font-size: 150%;
+    }
+
+    .input-container > input {
+        width: 100%;
+        border: none;
+        border-radius: 5px;
+        background-color: $dark-bg;
+        outline: none;
+
+        font-weight: $normal-weight;
+        font-size: 100%;
+    }
+
+    #see-pwd-logo {
+        padding-left: 0.5em;
+        margin-right: 0.5em;
+        cursor: pointer;
+        font-size: 120%;
+    }
+
+    .other-actions {
+        position: relative;
+        display: flex;
+
+        * {
+            font-weight: $lighter-weight;
+            font-size: 85%;
+        }
+
+        #rmb-me .checkbox{
+            margin-right: 0.5em;
+        }
+
+        #forgot-pwd {
+            position: absolute;
+            right: 0;
+        }
+    }
+
+    button {
+        margin-top: 2em;
+        height: 4em;
+        width: 30em;
+        background-color: $dark-bg; 
+        font-weight: $bold-weight;
+        border: none;
+
+        border: solid black;
+        border-width: 0 0 2px 0;
+        cursor: pointer;
+
+        span {
+            font-size: 150%;
+        }
+    }
+
+    button:hover {
+        filter: brightness(80%)
+    }
+
+    .sign-up {
+        margin-top: 3em;
+        text-align: center;
+        font-weight: $lighter-weight;
+        font-size: 80%;
+
+        span {
+            cursor: pointer;
+            font-weight: $lighter-weight;
+            font-weight: $light-weight;
+        }
+    }
+}

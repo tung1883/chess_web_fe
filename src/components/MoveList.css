@@ -1,0 +1,38 @@
+.book-icon {
+    padding-right: 0.5em;
+    font-size: 1.5em;
+}
+
+.move-list {
+    height: 90%;
+    overflow-y: auto;
+}
+
+.move {
+    display: flex;
+    align-items: center;
+    height: 12.5%;
+    display: flex;
+    flex-direction: row;
+}
+
+.move-number {
+    width: 2em;
+    padding-left: 1.5em;
+    padding-right: 4em;
+}
+
+.even {
+    background-color: #312e2b;
+}
+
+.white-move, .black-move {
+    width: 4em;
+    height: 1em;
+    float: right;
+    cursor: pointer;
+}
+
+.white-move {
+    margin-right: 6em;
+}

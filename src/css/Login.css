@@ -1,0 +1,113 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.background {
+  background-image: url("../../public/assets/poster.jpg");
+  width: 100vw;
+  height: 100vh;
+  background-size: 100vw 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.login-form {
+  margin-left: 5em;
+  margin-top: auto;
+  margin-bottom: auto;
+  width: 30em;
+  height: 30em;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #312e2b;
+}
+.login-form * {
+  font-family: system-ui, Arial;
+  color: white;
+  font-weight: 800;
+}
+.login-form > * {
+  width: 25em;
+}
+.login-form > * + * {
+  margin-bottom: 1.5em;
+  border-radius: 5px;
+}
+.login-form .chess-logo {
+  height: 8em;
+  width: 8em;
+}
+.login-form .input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 2.5em;
+  border-radius: 5px;
+  background-color: #272522;
+}
+.login-form .input-container > .logo {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  font-size: 150%;
+}
+.login-form .input-container > input {
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  background-color: #272522;
+  outline: none;
+  font-weight: bold;
+  font-size: 100%;
+}
+.login-form #see-pwd-logo {
+  padding-left: 0.5em;
+  margin-right: 0.5em;
+  cursor: pointer;
+  font-size: 120%;
+}
+.login-form .other-actions {
+  position: relative;
+  display: flex;
+}
+.login-form .other-actions * {
+  font-weight: 500;
+  font-size: 85%;
+}
+.login-form .other-actions #rmb-me .checkbox {
+  margin-right: 0.5em;
+}
+.login-form .other-actions #forgot-pwd {
+  position: absolute;
+  right: 0;
+}
+.login-form button {
+  margin-top: 2em;
+  height: 4em;
+  width: 30em;
+  background-color: #272522;
+  font-weight: 800;
+  border: none;
+  border: solid black;
+  border-width: 0 0 2px 0;
+  cursor: pointer;
+}
+.login-form button span {
+  font-size: 150%;
+}
+.login-form button:hover {
+  filter: brightness(80%);
+}
+.login-form .sign-up {
+  margin-top: 3em;
+  text-align: center;
+  font-weight: 500;
+  font-size: 80%;
+}
+.login-form .sign-up span {
+  cursor: pointer;
+  font-weight: 500;
+  font-weight: 600;
+}/*# sourceMappingURL=Login.css.map */

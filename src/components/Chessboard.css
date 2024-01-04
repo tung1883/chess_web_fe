@@ -1,0 +1,62 @@
+.chessboard {
+    display: flex;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, 12.5%);
+    grid-template-rows: repeat(8, 12.5%);
+    width: 90%;
+    height: 100%;
+    background-size: 100% 100%;
+}
+
+.square {
+    user-select: none;
+}
+
+.piece {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    cursor: grab;
+    user-select: none;
+}
+
+.piece:active {
+    cursor: grabbing
+}
+
+.cur-light {
+    background-color: #f6f668;
+}
+
+.cur-dark {
+    background-color: #bbca2a;
+}
+
+.arrow-container {
+    width: 10%;
+}
+
+.arrow {
+    margin: 3px;
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    height: 1px;
+    width: 1px;
+    padding: 3px;
+    cursor: pointer;
+}
+
+.right {
+    transform: rotate(-45deg);
+}
+
+.left {
+    margin-left: 1em;
+    transform: rotate(135deg);
+}

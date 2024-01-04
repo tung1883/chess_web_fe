@@ -1,0 +1,301 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100vh;
+  background-color: #312e2b;
+}
+
+#root {
+  display: flex;
+  flex-direction: row;
+  float: left;
+  min-height: 100%;
+}
+
+.navigation-bar {
+  position: relative;
+  width: 9.5em;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, Arial;
+  font-weight: bold;
+  background-color: #272522;
+  color: white;
+  /* make this responsive to the viewport */
+}
+.navigation-bar .logo {
+  width: 7em;
+  height: 7em;
+}
+.navigation-bar .username {
+  font-size: 120%;
+  font-weight: 800;
+  padding-bottom: 2.5em;
+}
+.navigation-bar > * + * {
+  padding-left: 1em;
+}
+.navigation-bar .menu-bar ul {
+  padding-bottom: 2.5em;
+}
+.navigation-bar footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding-bottom: 1em;
+  font-weight: 600;
+  font-size: 80%;
+}
+.navigation-bar footer li {
+  list-style-type: none;
+  bottom: 0;
+}
+.navigation-bar footer li ul {
+  padding-top: 0.5em;
+}
+.navigation-bar ul {
+  cursor: pointer;
+}
+.navigation-bar ul .menu-icon {
+  padding-right: 1em;
+}
+.navigation-bar .sub-menu {
+  display: none;
+  position: absolute;
+  left: 9.5em;
+  width: 20em;
+  height: 100%;
+  background-color: #272522;
+  filter: brightness(90%);
+  padding: 0;
+}
+.navigation-bar .sub-menu .sub-menu-component {
+  padding-top: 1em;
+}
+.navigation-bar .sub-menu .sub-menu-component > * {
+  padding-left: 1em;
+  padding-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+.navigation-bar .sub-menu .sub-menu-component > * svg {
+  padding-right: 0.5em;
+}
+.navigation-bar .sub-menu .sub-menu-component > div + div {
+  cursor: pointer;
+}
+.navigation-bar .sub-menu .sub-menu-component .horizontal-line {
+  cursor: default;
+  margin: 0.5em 0;
+  padding: 0;
+  border: #726755 solid;
+  border-width: 2px;
+}
+.navigation-bar .sub-menu .sub-menu-component > .sub-menu-request {
+  padding: 0;
+  margin: 0;
+}
+.navigation-bar .sub-menu .sub-menu-component > .sub-menu-request > .sub-menu-request-header {
+  padding-left: 1em;
+}
+.navigation-bar .sub-menu .sub-menu-component > .sub-menu-request > .sub-menu-request-body > div {
+  padding-top: 0.5em;
+  padding-left: 2em;
+  padding-bottom: 0.2em;
+}
+.navigation-bar .sub-menu .sub-menu-component > .sub-menu-request > .sub-menu-request-body > div {
+  font-size: 90%;
+  padding-left: 3em;
+  font-weight: normal;
+}
+.navigation-bar .sub-menu .sub-menu-game .sub-menu-request-component {
+  display: flex;
+  flex-direction: row;
+  margin-top: 0.5em;
+  align-items: center;
+}
+.navigation-bar .sub-menu .sub-menu-game .sub-menu-request-component > * {
+  margin-right: 0.3em;
+}
+.navigation-bar .sub-menu .sub-menu-game .sub-menu-request-component svg {
+  font-size: 150%;
+}
+.navigation-bar .sub-menu .sub-menu-game .sub-menu-request-component > div {
+  font-family: system-ui, Arial;
+  color: white;
+  font-weight: bold;
+}
+.navigation-bar .sub-menu .sub-menu-game .sub-menu-request-component > div > span {
+  color: gray;
+}
+.navigation-bar .sub-menu .sub-menu-game .sub-menu-request-component .sub-menu-request-icon {
+  padding-left: 0.5em;
+}
+.navigation-bar .sub-menu .sub-menu-game .sub-menu-request-component .sub-menu-request-icon > * {
+  padding-right: 0.3em;
+  cursor: pointer;
+}
+
+.main-component {
+  display: flex;
+  flex: 1;
+  height: 40em;
+}
+
+#board-container {
+  margin-top: 2em;
+  margin-right: 2em;
+  width: 40em;
+  height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-left: 8em;
+}
+#board-container .chessboard {
+  display: flex;
+  height: 90%;
+  flex-direction: row;
+}
+#board-container .user-container {
+  height: 8%;
+  min-height: -moz-fit-content;
+  min-height: fit-content;
+  display: flex;
+  align-items: center;
+  font-family: system-ui, Arial;
+  color: white;
+  font-weight: bold;
+  width: 90%;
+}
+#board-container .user-container .user-icon {
+  padding-right: 1em;
+  padding-left: 0.5em;
+  font-size: 150%;
+}
+
+#sidebar {
+  margin-top: 2em;
+  height: 100%;
+  border-radius: 15px;
+  background-color: #272522;
+  border-collapse: separate;
+}
+#sidebar .upper {
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, Arial;
+  font-weight: 600;
+  font-size: 90%;
+  letter-spacing: 1px;
+  color: white;
+  width: 30em;
+  height: 24.25em;
+  border: solid #726755;
+  border-width: 0 0 0.25em 0;
+  height: 60%;
+}
+#sidebar .upper .upper-top {
+  display: flex;
+  height: 10%;
+  align-items: center;
+  padding-left: 1.5em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  border: solid #726755;
+  border-width: 0 0 0.25em 0;
+}
+#sidebar .chat {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  font-family: system-ui, Arial;
+  font-weight: 500;
+  font-size: 85%;
+  color: white;
+  height: 40%;
+}
+#sidebar .chat .chat-output {
+  height: 80%;
+  padding-left: 1.5em;
+  overflow-y: auto;
+  padding-bottom: 1em;
+  display: flex;
+  flex-direction: column-reverse;
+}
+#sidebar .chat .chat-output .game-info {
+  margin-top: 1em;
+  margin-bottom: auto;
+  font-weight: bold;
+}
+#sidebar .chat .chat-output .message-container * {
+  padding-top: 0.5em;
+}
+#sidebar .chat .chat-input {
+  height: 20%;
+}
+#sidebar .chat .chat-input input {
+  height: 100%;
+  width: 100%;
+  overflow-x: auto;
+  background-color: #312e2b;
+  font-family: system-ui, Arial;
+  font-weight: 700px;
+  font-size: 100%;
+  color: white;
+  border: solid #272522;
+  border-width: 0 0 0.1em 0;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  text-indent: 1.5em;
+}
+#sidebar .chat .chat-input input:focus {
+  outline: none;
+}
+
+.request-pop-up-container {
+  position: fixed;
+  bottom: 5vh;
+  right: 5vw;
+}
+
+.pop-up-request-component {
+  padding: 0.5em;
+  margin-top: 0.7em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border: solid #504A4B;
+  border-radius: 10px;
+  border-width: 0.2em;
+  font-family: system-ui, Arial;
+  color: white;
+  font-weight: bold;
+  background-color: #302e2b;
+}
+.pop-up-request-component .pop-up-avatar {
+  margin-left: 0.3em;
+  margin-right: 0.5em;
+  padding: 0.2em;
+  font-size: 150%;
+  background-color: #474542;
+}
+.pop-up-request-component .pop-up-info {
+  padding-right: 0.5em;
+}
+.pop-up-request-component .pop-up-info span {
+  color: gray;
+}
+.pop-up-request-component .action-icon {
+  font-size: 150%;
+}
+.pop-up-request-component .action-icon svg {
+  cursor: pointer;
+}
+.pop-up-request-component .action-icon > * + * {
+  margin-left: 0.3em;
+}/*# sourceMappingURL=App.css.map */

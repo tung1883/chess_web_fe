@@ -1,0 +1,39 @@
+.action-sidebar {
+    height: 2em;
+
+    display: flex;
+    border: solid #726755;
+    border-width: 0.25em 0 0 0;
+
+    padding: 5px 0;
+}
+
+.action-sidebar > * {
+    width: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.action-sidebar span {
+    cursor: pointer;
+}
+
+.as-icon {
+    padding-right: 0.5em; 
+    font-size: 120%;
+}
+
+.as-popup {
+    display: flex;
+    align-items: center;
+} 
+
+.as-popup > * {
+    cursor: pointer;
+}
+
+.as-popup > * + * {
+    margin-left: 3em;
+}

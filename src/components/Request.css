@@ -1,0 +1,161 @@
+.friend-list {
+    height: 90%;
+}
+
+.friend-list-header {
+    height: 10%;
+    display: flex;
+    align-items: center;
+    padding-left: 1.5em;
+}
+
+.friend-list-header span {
+    padding-left: 0.5em;
+    color: gray;
+}
+
+.friend-list-main {
+    height: 90%;
+    overflow-y: auto;
+}
+
+.friend-component {
+    display: flex;
+    align-items: center;
+    height: 12.5%;
+    cursor: pointer;
+    padding-left: 1.5em;
+}
+
+.friend-component .friend-index {
+    padding-right: 0.5em;
+}
+
+.friend-component .friend-elo {
+    padding-left: 0.5em;
+}
+
+.friend-even {
+    background-color: #312e2b;
+}
+
+.requesting-header {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+
+    padding-top: 0.5em;
+    font-size: 120%;
+}
+
+.requesting-header .back-button-container {
+    position: relative;
+    justify-self: flex-start;
+    margin-right: auto;
+}
+
+.back-button {
+    position: absolute;
+    left: 1.5em;
+    cursor: pointer;
+}
+
+.requesting-header .dummyFlexBox {
+    margin-left: auto;
+}
+
+.requesting-header .requesting-text {
+    font-weight: 800;
+    font-size: 110%;
+}
+
+.requesting-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 1em;
+}
+
+.requesting-avatar {
+    font-size: 150%;
+    padding-bottom: 0.5em;;
+    margin: auto;
+}
+
+.requesting-user {
+    margin: auto;
+    font-weight: bold;
+    font-size: 110%;
+}
+
+.timer {
+    padding-top: 1.5em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.timer input {
+    width: 15%;
+    padding-top: 0.15em;
+    padding-bottom: 0.15em;
+    flex: 0 1 auto;
+    text-align: right;
+    font-family: system-ui, Arial;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #272522;
+    border-radius: 5px;
+    padding-right: 0.5em;
+    font-size: 80%;
+}
+
+.timer input:focus, .requesting-body button {
+    outline: none;
+}
+
+.timer text {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+.choose-side {
+    display: flex;
+    justify-content: center;
+    padding-top: 1em;
+}
+
+.choose-side > * {
+    margin: 1em 1em 0 1em;
+    font-size: 110%;
+    padding: 0.5em;
+    border: solid gray;
+    border-width: 2px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.requesting-body button {
+    margin: auto;
+    margin-top: 2em;
+    height: 4em;
+    width: 8em;
+    background-color: #769656;
+
+    border-radius: 10px;
+    border: solid #5e7c40;
+    border-width: 0 0 5px 0;
+    cursor: pointer;
+}
+
+.requesting-body button:active {
+    transform: translateY(5px);
+}
+
+.requesting-body button span {
+    font-family: system-ui, Arial;
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 120%;
+    color: white;
+}

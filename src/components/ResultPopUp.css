@@ -1,0 +1,87 @@
+.result-pop-up {
+    position: absolute;
+
+    top: 12em;
+    left: 25.5em;
+
+    height: 21em;
+    width: 19.5em;
+
+    color: white;
+    font-family: system-ui, Arial;
+    font-weight: bold;
+}
+
+.rpu-header {
+    position: relative;
+
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom: 0px;
+    background-color: #3c3a38;
+    height: 20%;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+}
+
+.rpuh-icon {
+    font-size: 150%;
+    margin-left: 4em;
+    margin-right: 1em;
+}
+
+.rpuh-close {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+
+    font-size: 80%;
+
+    cursor: pointer;
+}
+
+.rpu-body {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: #262421;
+    height: 80%;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rpu-body > button {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    
+    height: 2.5em;
+    width: 8em;
+
+    text-align: center;
+    line-height: 2em;
+
+    background-color: #769656;
+    border-radius: 10px;
+    border: solid #5e7c40;
+    border-width: 0 0 5px 0;
+
+    cursor: pointer;
+}
+
+.rpu-body > button:active {
+    transform: translateY(5px);
+}
+
+.rpu-body > button span {
+    color: white;
+    font-family: system-ui, Arial;
+    font-weight: bold;
+    font-size: 120%;
+    height: 2.5em;
+    width: 8em;
+
+}
