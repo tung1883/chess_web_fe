@@ -24,10 +24,10 @@ export async function getOppMove(gameID, curMoveNumber) {
 
 export function playMove(moveInfo) {
     if (!moveInfo.move || !moveInfo.time || !moveInfo.i1 || !moveInfo.i2) return false
-    
+
     return axios({
         method: 'post',
-        url: '/game/new/active',
+        url: `/game/new/active/${moveInfo.gameID}`,
         data: moveInfo
     })
     .then(() => { return true })
@@ -40,7 +40,7 @@ export function playMove(moveInfo) {
 export function sendGameResult(gameID, wp, bp, result) {
     return axios({
         method: 'post',
-        url: '/game/new/active',
+        url: `/game/new/active/${gameID}`,
         data: { gameID, wp, bp, result }
     })
     .then(() => { return true })
@@ -149,10 +149,12 @@ export function sendRequest(request) {
 
 //other functionalities
 export function setPlayState(userID, gameInfo) {
+    // eslint-disable-next-line
     let waiting = !(userID == gameInfo.wp)
 
     return {
         ...gameInfo, waiting,
+        // eslint-disable-next-line
         oppUser: (userID == gameInfo.wp) ? gameInfo.bu : gameInfo.wu,
         time: 0
     }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FaUserAlt , FaQuestion} from 'react-icons/fa'
 import { FaArrowLeft, FaChessBoard, FaChessKing, FaRegChessKing} from 'react-icons/fa6'
-import { timeToText } from "./Timer";
+import { timeToText } from "../components/Timer";
 
 import './Request.css'
 

@@ -1,6 +1,6 @@
 import getMoveType from './MoveControl'
 import { moveToText } from './BoardParser'
-import { setGameEnd } from './StateControl'
+import { setGameEnd } from '../../containers/StateControl'
 
 const defaultSpecial = {ep: null, wc: [true, true], bc: [true, true]}
 

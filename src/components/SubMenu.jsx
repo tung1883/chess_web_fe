@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { FaUserAlt, FaChessPawn, FaRobot,
-  FaAward, FaShapes, FaEnvelope, FaCheckSquare } from 'react-icons/fa'
+import { FaUserAlt, FaChessPawn, FaRobot, FaAward, FaShapes, FaEnvelope, FaCheckSquare } from 'react-icons/fa'
 import { FaSquareXmark } from 'react-icons/fa6'
-import { hasRequestToRender, requestActionHandler } from "./RequestControl";
-import { timerParser } from "./Request";
+
+import { hasRequestToRender, requestActionHandler } from "../containers/RequestControl";
+import { timerParser } from "../containers/Request";
 
 export default function SubMenu(params) {
     const { requestList } = params

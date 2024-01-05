@@ -3,7 +3,7 @@ import './MoveList.css';
 import { FaBook } from 'react-icons/fa'
 import { moveListParser } from "./BoardParser";
 import BoardControl from "./BoardControl";
-import ActionSidebar from "./ActionSidebar";
+import ActionSidebar from "../ActionSidebar";
 
 //moveList: [{ move, special, moveState }]
 //move: { moveType, p1, i1, p2, i2 }

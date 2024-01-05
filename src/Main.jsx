@@ -1,21 +1,23 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FaChessBoard, FaRunning, FaGlasses, FaNewspaper, 
   FaGlobeAmericas, FaStream, FaLanguage, FaQuestion, FaUserAlt } from 'react-icons/fa'
 
-import { Chessboard } from './components/Chessboard';
-import BoardControl, { setUpBoard } from "./components/BoardControl";
 import { Timer } from "./components/Timer";
-import MoveList from './components/MoveList';
 import SubMenu from "./components/SubMenu";
-import RequestPopUp from "./components/RequestPopUp";
-import Request from "./components/Request";
-import { useNavigate } from "react-router-dom";
-import { textParser } from "./components/BoardParser";
-import { setGameEnd, acceptRequest, getOppMove, playMove, requestReceiver, sendRequest, sentRequestListener, 
-    parsedTimeRecord, sendGameResult} from "./components/StateControl";
 import { deleteMessages, getMessages, sendMessage } from "./components/Message";
-import { ResultPopUp } from "./components/ResultPopUp";
+
+import { Chessboard } from './components/chessboard/Chessboard';
+import BoardControl, { setUpBoard } from "./components/chessboard/BoardControl";
+import MoveList from './components/chessboard/MoveList';
+import { textParser } from "./components/chessboard/BoardParser";
+
+import RequestPopUp from "./containers/RequestPopUp";
+import Request from "./containers/Request";
+import { ResultPopUp } from "./containers/ResultPopUp";
+import { setGameEnd, acceptRequest, getOppMove, playMove, requestReceiver, sendRequest, sentRequestListener, 
+    parsedTimeRecord, sendGameResult} from "./containers/StateControl";
 
 export default function Main({ userState }) {
     //4 states: (1) listen -> request, (2) accept request, (3) request, (4) play
@@ -284,6 +286,7 @@ export default function Main({ userState }) {
             if (!state.play.move || !state.play.i1 || !state.play.i2) return
 
             const moveTime = Date.now() - getStartDate(state.play.startedTime, state.play.timer, getSide(false))
+
             if (await playMove({ ...state.play, time: moveTime})) {
                 if (state.play.timer.record) {
                     state.play.timer.record.push(moveTime)
