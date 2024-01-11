@@ -1,7 +1,6 @@
 import axios from "axios"
 import { declineRequest } from "./RequestControl"
 
-//play state
 export async function getOppMove(gameID, curMoveNumber) {
     try {
         const { move_number: newMoveNumber, time_spent: timeSpent, i1, i2, result } = (await axios({
@@ -98,6 +97,8 @@ export async function acceptRequest(userID, gameInfo) {
             data: { gameID: createNewGame.data.gameID, reqID: gameInfo.reqID, action: 1 }
         })
         
+        console.log(updateRequest.data)
+
         return setPlayState(userID, { ...gameInfo, startedTime, gameID: updateRequest.data.gameID })
     } catch (err) {
         console.log(err)

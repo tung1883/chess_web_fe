@@ -43,18 +43,15 @@ export default function Main({ userState }) {
     
     const navigate = useNavigate()
     
-    //navigate and handle state
     useEffect(() => {
         if (!userState) {
             timeouts.current.forEach((timer) => clearTimeout(timer))
             navigate('/')
-        }
-    }, [userState])
-    
-    useEffect(() => {
-        if (userState && !stateSetUp.current) {
-            setUpState()
-            stateSetUp.current = 1
+        } else {
+            if (!stateSetUp.current) {
+                setUpState()
+                stateSetUp.current = 1
+            }
         }
     }, [userState])
 

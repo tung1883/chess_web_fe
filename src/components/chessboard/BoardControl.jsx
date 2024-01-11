@@ -1,6 +1,7 @@
 import getMoveType from './MoveControl'
 import { moveToText } from './BoardParser'
 import { setGameEnd } from '../../containers/StateControl'
+import { copyObject } from '../../functionalities/copyObject'
 
 const defaultSpecial = {ep: null, wc: [true, true], bc: [true, true]}
 
@@ -20,8 +21,7 @@ export function posToIndex(x, y) {return x + 8 * y}
 //result: 2 (black wins)
 
 //decide if piece from i1 can move to i2 -> update + provide info about moveState of the game
-export default function BoardControl({ board, i1, i2, curMove, moveList, back, next, waiting, end, 
-    state, setState }) {
+export default function BoardControl({ board, i1, i2, curMove, moveList, back, next, waiting, end, state, setState }) {
     if (end) {
         if (moveList.length !== 0) {
             moveList[moveList.length - 1].moveState.end = end
@@ -62,15 +62,15 @@ export default function BoardControl({ board, i1, i2, curMove, moveList, back, n
     const [x1, y1] = indexToPos(i1), [x2, y2] = indexToPos(i2)
     const p1 = board[i1], p2 = board[i2]
     let moveState = { check: null, end: null }
-    let special = (curMove !== 0) ? copy(moveList[curMove - 1].special) : defaultSpecial
+    let special = (curMove !== 0) ? copyObject(moveList[curMove - 1].special) : defaultSpecial
     const castle = (p1[0] === 'w') ? special.wc : special.bc
     let moveType = getMoveType(board, i1, i2, special.ep, castle)
 
-    //no update if: game ended, no the side to move, invalid move
+    //no update if: game ended, not the side to move, invalid move
     if ((curMove > 1 && moveList[curMove - 1].moveState.end) || side !== p1[0] || !moveType || 
         (state && state.play && state.play.waiting && !waiting)) return noUpdate
 
-    board = updateBoard(copy(board), moveType, i1, i2) //update board
+    board = updateBoard(copyObject(board), moveType, i1, i2) 
 
     if (attackedAfterMove(board, side, i1, i2, getKingPos(board, side))) return noUpdate
     
@@ -144,7 +144,8 @@ function updateBoard(board, moveType, i1, i2) {
         board[i2] = p1
     }
     
-    switch (moveType) {//case 1 - normal move
+    switch (moveType) {
+        //case 1 - normal move
         case 2: //short castle
         case 3: //long castle
             const rY = (p1[0] === 'w') ? 7 : 0
@@ -173,7 +174,8 @@ function takeBack(board, moveType, p1, i1, p2, i2) {
         board[x2 + 8 * y2] = p2
     }
     
-    switch (moveType) {//case 1 - normal move
+    switch (moveType) {
+        //case 1 - normal move
         case 2: //short castle
         case 3: //long castle
             const rX = (moveType === 2) ? [7, 5] : [0, 3] //check whether it is short or long castle
@@ -252,7 +254,7 @@ function noMove(board, side, ep, castle) {
         for (let i = 0; i < board.length; i++) {
             if ((board[i] && board[i][0] === side) || i === posToIndex(x1, y1)) continue
             const moveType = getMoveType(board, index, i)
-            const newBoard = updateBoard(copy(board), moveType, index, i)
+            const newBoard = updateBoard(copyObject(board), moveType, index, i)
             const kPos = getKingPos(newBoard, side)
 
             if (moveType !== 0 && !attack(newBoard, getOtherSide(side), kPos, ep, castle)) return true
@@ -263,8 +265,6 @@ function noMove(board, side, ep, castle) {
 
     return false
 }
-
-function copy(obj) { return JSON.parse(JSON.stringify(obj)) }
 
 function getKingPos(board, side) {
     for (let i = 0; i < board.length; i++) {
