@@ -49,7 +49,7 @@ export default function MoveList(params) {
                     white={move.white} black={move.black}></MoveComponent>)}
                 <div ref={listEnd}></div>
             </div>
-            <ActionSidebar playState={params.playState} exitPlayState={params.exitPlayState}></ActionSidebar>
+            <ActionSidebar state={params.state} setState={params.setState} exitPlayState={params.exitPlayState}></ActionSidebar>
         </div>
     ) 
 }

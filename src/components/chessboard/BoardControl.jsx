@@ -2,6 +2,7 @@ import getMoveType from './MoveControl'
 import { moveToText } from './BoardParser'
 import { setGameEnd } from '../../containers/StateControl'
 import { copyObject } from '../../functionalities/copyObject'
+import { FaCediSign } from 'react-icons/fa6'
 
 const defaultSpecial = {ep: null, wc: [true, true], bc: [true, true]}
 
@@ -22,18 +23,20 @@ export function posToIndex(x, y) {return x + 8 * y}
 
 //decide if piece from i1 can move to i2 -> update + provide info about moveState of the game
 export default function BoardControl({ board, i1, i2, curMove, moveList, back, next, waiting, end, state, setState }) {
-    if (end) {
-        if (moveList.length !== 0) {
-            moveList[moveList.length - 1].moveState.end = end
-        } else {
-            let move = {
-                moveState: { end }
-            }
-            moveList.push(move)
-        }
+    // if (end) { 
+    //     if (moveList.length !== 0) {
+    //         moveList[moveList.length - 1].moveState.end = end
+    //     } else {
+    //         let move = {
+    //             moveState: { end }
+    //         }
+    //         moveList.push(move)
+    //     }
 
-        return { board, curMove, moveList }
-    }
+    //     console.log(moveList)
+
+    //     return { board, curMove, moveList }
+    // }
 
     const noUpdate = { board, curMove, moveList }
     const side = (curMove % 2 === 0) ? 'w' : 'b'
@@ -93,6 +96,7 @@ export default function BoardControl({ board, i1, i2, curMove, moveList, back, n
     const move = { moveType, p1, i1, p2, i2 }
     if (curMove !== moveList.length && moveList[curMove].move !== move) moveList.splice(curMove)
     moveList.push({ move, special, moveState })
+
     curMove = moveList.length
 
     if (state && state.play && !state.play.waiting && !waiting) {

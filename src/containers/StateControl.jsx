@@ -1,5 +1,4 @@
 import axios from "axios"
-import { declineRequest } from "./RequestControl"
 
 export async function getOppMove(gameID, curMoveNumber) {
     try {
@@ -44,7 +43,7 @@ export function sendGameResult(gameID, wp, bp, result) {
     })
     .then(() => { return true })
     .catch((err) => {
-        console.log(err) 
+        // console.log(err) 
         return false
     })
 }
@@ -96,8 +95,6 @@ export async function acceptRequest(userID, gameInfo) {
             url: '/game/request/res',
             data: { gameID: createNewGame.data.gameID, reqID: gameInfo.reqID, action: 1 }
         })
-        
-        console.log(updateRequest.data)
 
         return setPlayState(userID, { ...gameInfo, startedTime, gameID: updateRequest.data.gameID })
     } catch (err) {
@@ -135,17 +132,54 @@ export async function sentRequestListener(userID, requestIndex, requestList) {
     }
 }
 
-export function sendRequest(request) {
-     axios({
+export async function sendRequest(request) {
+    return axios({
         method: 'post',
         url: '/game/request',
         data: {
             ...request, timer: getTimerFormat(request.timer)
         }
     }).then((res) => {
-        request.waiting = true
-        request.reqID = res.data.reqID
-    }).catch((err) => console.log(err))
+        return { ...request, waiting: true, reqID: res.data.reqID }
+    }).catch((err) => {
+        console.log(err)   
+        return null
+    })
+}
+
+export function declineRequest(reqID) {
+    axios({
+        method: 'post',
+        url: '/game/request/res',
+        data: {
+            reqID: reqID,
+            action: 0
+        }
+    }).catch((err) => {
+        console.log(err)
+    })
+}
+
+export async function sendRematchRequest(request) {
+    try { 
+        let updatedRequest = await sendRequest(request)
+        let errorCounter = 0
+
+        // error -> try to re-send 5 times
+        if (!updatedRequest) {
+            if (errorCounter > 5) {
+                throw new Error("Can not send rematch request")
+            }
+
+            updatedRequest = await sendRequest(request)
+        }
+
+        console.log(updatedRequest)
+        return updatedRequest
+    } catch (err) {
+        console.log(err)
+        return null
+    }
 }
 
 //other functionalities

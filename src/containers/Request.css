@@ -146,6 +146,10 @@
     border: solid #5e7c40;
     border-width: 0 0 5px 0;
     cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .requesting-body button:active {

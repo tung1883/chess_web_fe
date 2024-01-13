@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
 import './ResultPopUp.css'
 import { BsTrophy } from 'react-icons/bs';
 import { FaSkullCrossbones, FaChess } from 'react-icons/fa';
 import { ImCross } from 'react-icons/im'
 
-export function ResultPopUp({ userSide, end }) {
+export function ResultPopUp({ userSide, state, setState, exitPlayState}) {
+    const { end, wp, bp, wu, bu, timer } = state.play
+
     const getIcon = (result) => {
         result = parseInt(result)
 
@@ -48,6 +49,15 @@ export function ResultPopUp({ userSide, end }) {
         resultPopUp.style.visibility = 'hidden'
     }
 
+    const handleRematch = () => {   
+        state.request.push({
+            timer: { format: timer.format },
+            wp: bp, wu: bu, bp: wp, bu: wu
+        })
+
+        setState({...state})
+    }
+
     return <div className='result-pop-up'>
         <div className='rpu-header'>
             {getIcon(end.result)}
@@ -58,8 +68,8 @@ export function ResultPopUp({ userSide, end }) {
             <ImCross onClick={close} className='rpuh-close'></ImCross>
         </div>
         <div className='rpu-body'>
-            <button><span>Rematch</span></button>
-            <button><span>New Game</span></button>
+            <button onClick={handleRematch}><span>Rematch</span></button>
+            <button onClick={exitPlayState}><span>New Game</span></button>
             <button><span>Training</span></button>
         </div>
     </div>

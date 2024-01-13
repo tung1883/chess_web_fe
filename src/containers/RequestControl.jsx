@@ -1,4 +1,7 @@
-import axios from "axios"
+import { declineRequest } from "./StateControl"
+
+// NOTE: this file only contains UI-related functions for request feature
+// see StateControl.jsx for logic-related functions
 
 //check if there is any request left to render 
 export function hasRequestToRender(requestList, DOMElement) {
@@ -31,22 +34,10 @@ export function requestActionHandler (params) {
     setRequestList([...requestList])
 
     if (requestComponent) requestComponent.style.display = 'none'
-    if (isAccepted && !state.accept && !state.play) {
+    if (isAccepted && !state.accept && !(state.play && !state.play.end)) {
         setState({...state, accept: request})
     }
 
     if (!isAccepted) declineRequest(reqID)
 }
 
-export function declineRequest(reqID) {
-    axios({
-        method: 'post',
-        url: '/game/request/res',
-        data: {
-            reqID: reqID,
-            action: 0
-        }
-    }).catch((err) => {
-        console.log(err)
-    })
-}

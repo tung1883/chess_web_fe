@@ -3,19 +3,30 @@ import { useState } from 'react'
 import './ActionSidebar.css'
 import { FaHandshake, FaRegFlag } from 'react-icons/fa'
 
-export default function ActionSidebar({ playState, exitPlayState }) {
+export default function ActionSidebar({ state, setState, exitPlayState }) {
     const [clicked, setClicked] = useState({ resign: false, draw: false })
     
-    const resignHandler = () => {
+    const handleResign = () => {
         console.log('resign')
     }
 
-    const drawHandler = () => {
+    const handleDraw = () => {
 
     }
 
+    const handleRematch = () => {   
+        let { wp, wu, bp, bu, timer } = state.play
+
+        state.request.push({
+            timer: { format: timer.format },
+            wp: bp, wu: bu, bp: wp, bu: wu
+        })
+
+        setState({...state})
+    }
+
     return <div className='action-sidebar'>
-        {playState && !playState.end ? <>
+        {state.play && !state.play.end ? <>
             <div>
                 {!clicked.resign && 
                     <span onClick={() => {
@@ -23,7 +34,7 @@ export default function ActionSidebar({ playState, exitPlayState }) {
                     }}>
                         <FaRegFlag className='as-icon'></FaRegFlag>Resign</span>}
                 {clicked.resign && <div className='as-popup'>
-                    <div onClick={resignHandler}>Yes</div>
+                    <div onClick={handleResign}>Yes</div>
                     <div onClick={() => setClicked({ draw: false, resign: false })}>No</div>
                 </div>}
             </div>
@@ -33,12 +44,12 @@ export default function ActionSidebar({ playState, exitPlayState }) {
                         setClicked({ resign: false, draw: true })
                     }}><FaHandshake className='as-icon'></FaHandshake>Draw</span>}
                 {clicked.draw && <div className='as-popup'>
-                    <div onClick={drawHandler}>Yes</div>
+                    <div onClick={handleDraw}>Yes</div>
                     <div onClick={() => setClicked({ draw: false, resign: false })}>No</div>
                 </div>}
             </div>
         </> : <>
-            <div><span>Rematch</span></div>
+            <div onClick={handleRematch}><span>Rematch</span></div>
             <div onClick={exitPlayState}><span>New Game</span></div>
         </>}
     </div>

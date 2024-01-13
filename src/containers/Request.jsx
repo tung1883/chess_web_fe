@@ -3,8 +3,15 @@ import axios from "axios";
 import { FaUserAlt , FaQuestion} from 'react-icons/fa'
 import { FaArrowLeft, FaChessBoard, FaChessKing, FaRegChessKing} from 'react-icons/fa6'
 import { timeToText } from "../components/Timer";
+import LoadingSpinner from '../components/LoadingSpinner'
 
 import './Request.css'
+
+const DEFAULT_TIME = {
+    min: '0',
+    sec: '1',
+    incre: '0'
+}
 
 export default function Request({ userState, state, setState }) {
     const [friendList, setFriendList] = useState([])
@@ -15,6 +22,7 @@ export default function Request({ userState, state, setState }) {
         timer: null
     })
     const timeouts = useRef([])
+    const isRequesting = useRef(false)
 
     const getUserList = () => {
         axios({
@@ -50,6 +58,7 @@ export default function Request({ userState, state, setState }) {
     
     const requestSubmit = () => {
         const timerChild = document.getElementsByClassName('timer')[0].childNodes
+        isRequesting.current = true
         let wp = null, wu = null, bp = null, bu = null
         switch (requestData.side) {
             case 'white':
@@ -84,13 +93,14 @@ export default function Request({ userState, state, setState }) {
                 format: getTimeFormat(timerChild[0].value, timerChild[2].value, timerChild[4].value)
             }
         })
+        
         setState({...state})
     }
 
     const getTimeFormat = (min, sec, incre) => {
-        if (!min) min = '0'
-        if (!sec) sec = '0'
-        if (!incre) incre = '0'
+        if (!min) min = DEFAULT_TIME.min
+        if (!sec) sec = DEFAULT_TIME.sec
+        if (!incre) incre = DEFAULT_TIME.incre
 
         return {
             time: parseInt(min) * 60 + parseInt(sec),
@@ -156,7 +166,11 @@ export default function Request({ userState, state, setState }) {
                         </div>
                         <button
                             onClick={requestSubmit}
-                        ><span>Request</span></button>
+                        >
+                            {(isRequesting.current === false) ? <span>Request</span>
+                                : <span><LoadingSpinner width={15} height={15}></LoadingSpinner></span>
+                            }
+                        </button>
                     </div>
                 </div>
             }

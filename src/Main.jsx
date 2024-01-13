@@ -164,7 +164,7 @@ export default function Main({ userState }) {
             }
         }
 
-        if (endDate <= Date.now() && !state.play.end && !state.play.waiting) {
+        if (endDate <= Date.now() && !state.play.end) {
             //set the game to end when one's timer has run out of time
             let end = { result: !side + 1, method: 1 }
             setState({ ...state, play: { ...state.play, ...setGameEnd(end) }})
@@ -243,24 +243,42 @@ export default function Main({ userState }) {
         .catch((err) => console.log(err))
     }
 
+    {/*
+        4 states: enter, exit, data
+        playing:
+            - enter: accept/get accepted
+            - exit: game finished
+            - data: game data
+        requesting
+            - enter: user send request
+            - exit: request get accepted/declined
+            - data: requesting list
+        accepting
+            - enter: receive request
+            - exit: user replies request
+            - data: receiving list
+        listening
+            - enter/exit: no
+            - always listens for request (accept when playing)
+    */}
+
     const stateHandler = async (stateType) => {
-        //play state
         if (stateType === 'play' && state.play) {
-            //game ended
             if (state.play.end) {
-                if (!state.play.end.received) {
+                if (!state.play.waiting) {
                     let { gameID, wp, bp, result } = state.play
+                    let errorCounter = 0
                     let resultSender = await sendGameResult(gameID, wp, bp, result)
 
-                    if (!resultSender) {
-                        timeouts.current.push(setTimeout(() => stateHandler('play'), 1000))
+                    while (!resultSender && errorCounter < 5) {
+                        resultSender = await sendGameResult(gameID, wp, bp, result)
                     }
                 }
                 
-                //handle game end
+                return
             }
             
-            //waiting for opponent move
+            // wait for opponent's move
             if (state.play.waiting) {
                 let oppMove = await getOppMove(state.play.gameID, boardInfo.moveList.length - 1)
 
@@ -296,30 +314,36 @@ export default function Main({ userState }) {
         }
 
         if (state.play && !state.play.end) return
-        
-        //listen state
+
         if (stateType === 'listen' && state.listen) { 
             setRequestList([...await requestReceiver(requestList)])
             timeouts.current.push(setTimeout(() => stateHandler('listen'), 5 * 1000))
         }
 
-        //accept state
         if (stateType === 'accept' && state.accept) {
             let newGame = await acceptRequest(userState[0], state.accept)
-            if (!newGame) return 
+
+            if (!newGame) { 
+                state.accept = null
+                return 
+            } 
 
             setRequestList([])
             setBoardInfo({ board: setUpBoard(), curMove: 0, moveList: []})
             setState({...state, play: newGame, accept: null})  
         }
 
-        //request state
         if (stateType === 'request' && state.request.length !== 0) {
             state.request.forEach(async (request, index) => {
-                if (!request.waiting) return sendRequest(request)
+                if (!request.waiting) {
+                    const updatedRequest = await sendRequest(request)
+                    if (!updatedRequest) return
+
+                    return state.request[index] = updatedRequest
+                }
 
                 const listener = await sentRequestListener(userState[0], index, state.request)
-
+                
                 if (listener.playState) {
                     setState({ ...state, play: listener.playState })
                     setBoardInfo({ board: setUpBoard(), curMove: 0, moveList: [] })
@@ -383,14 +407,15 @@ export default function Main({ userState }) {
                     <FaUserAlt className="user-icon"></FaUserAlt>
                     {userState && userState[1]}
                     <Timer endTime={getEndDate(state?.play?.startedTime, state?.play?.timer, getSide(false))} 
-                        isStopped={timerStop(getSideID(true))}></Timer>
+                        isStopped={timerStop(getSideID(true))}/>
                 </div>
-                {state?.play?.end && <ResultPopUp end={state.play.end} userSide={getSide(false)}></ResultPopUp>} 
+                {state?.play?.end && 
+                    <ResultPopUp userSide={getSide(false)} state={state} setState={setState} exitPlayState={exitPlayState}/>} 
             </div>
 
             <div id='sidebar'>
                 {(state.play) ? <MoveList className='move-list-container' 
-                    boardInfo={boardInfo} setBoardInfo={setBoardInfo} playState={state.play}
+                    boardInfo={boardInfo} setBoardInfo={setBoardInfo} state={state} setState={setState}
                     exitPlayState={exitPlayState}    
                 ></MoveList>
                 : <Request userState={userState} state={state} setState={setState}></Request>}
