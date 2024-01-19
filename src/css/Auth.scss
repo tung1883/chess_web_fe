@@ -5,6 +5,11 @@
     margin: 0;
 }
 
+input:-webkit-autofill {
+    -webkit-box-shadow: 200px 200px 100px $dark-bg inset;
+    box-shadow: 200px 200px 100px $dark-bg inset;
+}
+
 .background {
     background-image: url('../../public/assets/poster.jpg');
     width: 100vw;
@@ -16,7 +21,7 @@
 
 }
 
-.login-form {
+.auth-form {
     margin-left: 5em;
     margin-top: auto;
     margin-bottom: auto;
@@ -70,7 +75,6 @@
     .input-container > input {
         width: 100%;
         border: none;
-        border-radius: 5px;
         background-color: $dark-bg;
         outline: none;
 
@@ -105,7 +109,7 @@
     }
 
     button {
-        margin-top: 2em;
+        margin-top: 1em;
         height: 4em;
         width: 30em;
         background-color: $dark-bg; 
@@ -125,16 +129,26 @@
         filter: brightness(80%)
     }
 
-    .sign-up {
-        margin-top: 3em;
-        text-align: center;
-        font-weight: $lighter-weight;
-        font-size: 80%;
-
-        span {
-            cursor: pointer;
+    #footer {
+        margin-top: 0.5em;
+        
+        #msg {
             font-weight: $lighter-weight;
-            font-weight: $light-weight;
+            font-size: 85%;
+            width: 100%;
+            margin-bottom: 1.5em;
+        }
+
+        .sign-up {
+            text-align: center;
+            font-weight: $lighter-weight;
+            font-size: 80%;
+    
+            span {
+                cursor: pointer;
+                font-weight: $lighter-weight;
+                font-weight: $light-weight;
+            }
         }
     }
 }

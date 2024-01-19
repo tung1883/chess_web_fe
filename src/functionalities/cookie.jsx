@@ -1,4 +1,4 @@
-export default function getCookieValue(cname) {
+export function getCookie(cname) {
   let name = cname + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
   let ca = decodedCookie.split(';');
@@ -16,4 +16,13 @@ export default function getCookieValue(cname) {
   }
 
   return "";
+}
+
+export function deleteCookie(cname, cpath, cdomain ) {
+  if (getCookie(cname)) {
+    document.cookie = cname + "=" +
+      ((cpath) ? ";path=" + cpath : "") +
+      ((cdomain) ? ";domain=" + cdomain : "") +
+      ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+  }
 }

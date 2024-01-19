@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { FaUserAlt , FaQuestion} from 'react-icons/fa'
 import { FaArrowLeft, FaChessBoard, FaChessKing, FaRegChessKing} from 'react-icons/fa6'
@@ -6,6 +6,7 @@ import { timeToText } from "../components/Timer";
 import LoadingSpinner from '../components/LoadingSpinner'
 
 import './Request.css'
+import { CurrentUserContext } from "../Contexts";
 
 const DEFAULT_TIME = {
     min: '0',
@@ -13,7 +14,7 @@ const DEFAULT_TIME = {
     incre: '0'
 }
 
-export default function Request({ userState, state, setState }) {
+export default function Request({ state, setState }) {
     const [friendList, setFriendList] = useState([])
     const [requestData, setRequestData] = useState({
         oppID: null,
@@ -23,6 +24,7 @@ export default function Request({ userState, state, setState }) {
     })
     const timeouts = useRef([])
     const isRequesting = useRef(false)
+    const { user } = useContext(CurrentUserContext)
 
     const getUserList = () => {
         axios({
@@ -32,7 +34,7 @@ export default function Request({ userState, state, setState }) {
             const tempFriendList = []
             res.data.map((userObj) => tempFriendList.push({id: userObj.userID, username: userObj.user}))
             setFriendList(tempFriendList.filter((friend) => {
-                if (userState) return friend.username !== userState[1]
+                if (user) return friend.username !== user.name
             }))
         })
         
@@ -62,27 +64,27 @@ export default function Request({ userState, state, setState }) {
         let wp = null, wu = null, bp = null, bu = null
         switch (requestData.side) {
             case 'white':
-                wp = parseInt(userState[0])
-                wu = userState[1]
+                wp = parseInt(user.id)
+                wu = user.name
                 bp = parseInt(requestData.oppID)
                 bu = requestData.oppUsername
                 break
             case 'black':
-                bp = userState[0]
-                bu = userState[1]
+                bp = user.id
+                bu = user.name
                 wp = parseInt(requestData.oppID)
                 wu = requestData.oppUsername
                 break
             default: //random
                 if (randomInteger(0, 1)) {
                     //1 -> white
-                    wp = parseInt(userState[0])
-                    wu = userState[1]
+                    wp = parseInt(user.id)
+                    wu = user.name
                     bp = parseInt(requestData.oppID)
                     bu = requestData.oppUsername
                 } else {
-                    bp = parseInt(userState[0])
-                    bu = userState[1]
+                    bp = parseInt(user.id)
+                    bu = user.name
                     wp = parseInt(requestData.oppID)
                     wu = requestData.oppUsername
                 }

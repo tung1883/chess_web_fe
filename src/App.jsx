@@ -1,55 +1,68 @@
-import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter, 
-  Routes,
-  Route,
-} from 'react-router-dom';
-import { io } from "socket.io-client";
+import { useState, useEffect, useRef } from "react";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import axios from "axios";
+import { CurrentUserContext, DocumentTitleContext } from "./Contexts";
 
 import './css/App.css';
-import Login from './Login';
+import Auth from './Auth';
 import Main from './Main';
-import getCookieValue from "./functionalities/GetCookie";
+import { getCookie, deleteCookie } from "./functionalities/cookie";
 
 export default function App() {
   axios.defaults.withCredentials = true;
   axios.defaults.baseURL = "http://localhost:8000/"
-  
-  const socket = io('http://localhost:8000', {
-    autoConnect: false
-  })
 
-  const getUser = () => {
-    //each of these cookies expires in 15 min.
-    if (getCookieValue('token_payload') && getCookieValue('user') && getCookieValue('userID')) {
-      return [getCookieValue('userID'), getCookieValue('user')]
+  const [user, setUser] = useState(null)
+  const [title, setTitle] = useState('Play Chess') //set document title
+  const documentTitle = useRef('Chess') 
+  const EXPIRE_CHECK_GAP = 5 * 1000 //gap time between each cookie expiration check
+
+  useEffect(() => {
+    //set up user intially and also check for expiration periodically
+    const checkUser = () => {
+      const currentUser = getUserFromCookies()
+      if (user !== currentUser) setUser(currentUser)
+
+      return setTimeout(() => checkUser(), EXPIRE_CHECK_GAP)
     }
 
-    return null
-  }
-
-  const [userState, setUserState] = useState(null) 
-
-  const setUser = () => {
-    setUserState(getUser())
-    return setTimeout(() => setUser(), 5 * 1000)
-  }
-   
-  useEffect(() => {
-    setUser() 
+    checkUser() 
   }, [])
-  
+
   useEffect(() => {
-    if (!socket.connected) socket.connect()
-  }, [socket.connected])
+    document.title = title
+  }, [title])
 
   return (
-    <BrowserRouter>
-      <Routes path='/'>
-        <Route path='/' element ={<Login userState={userState} setUserState={setUserState}></Login>}></Route>
-        <Route path='/main' element={<Main userState={userState}></Main>}></Route>
-      </Routes>
-    </BrowserRouter>
+    <DocumentTitleContext.Provider value={{title: title, setTitle: setTitle}}>
+      <CurrentUserContext.Provider value={{user: user, setUser: setUser}}>
+        <BrowserRouter>
+          <Routes path='/'>
+            <Route path='/' element ={(user) ? <Main/> : <Auth/>}/>
+            <Route path='/main' element={<title>main</title>} title='main'></Route>
+          </Routes>
+        </BrowserRouter>
+      </CurrentUserContext.Provider>
+    </DocumentTitleContext.Provider>
   )
+}
+
+const getUserFromCookies = () => {
+  //each of these cookies expires in 15 min.
+  if (getCookie('token_payload') && getCookie('user') && getCookie('userID')) {
+    return {
+      id: getCookie('userID'), 
+      name: getCookie('user')
+    }
+  }
+
+  return null
+}
+
+export const logOut = (setUser) => {
+  deleteCookie('token_payload')
+  deleteCookie('user')
+  deleteCookie('userID')
+
+  setUser(null)
 }

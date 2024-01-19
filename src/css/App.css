@@ -34,6 +34,7 @@ body {
   font-size: 120%;
   font-weight: 800;
   padding-bottom: 2.5em;
+  cursor: pointer;
 }
 .navigation-bar > * + * {
   padding-left: 1em;
@@ -83,7 +84,7 @@ body {
 .navigation-bar .sub-menu .sub-menu-component > * svg {
   padding-right: 0.5em;
 }
-.navigation-bar .sub-menu .sub-menu-component > div + div {
+.navigation-bar .sub-menu .sub-menu-component > div {
   cursor: pointer;
 }
 .navigation-bar .sub-menu .sub-menu-component .horizontal-line {
@@ -94,6 +95,7 @@ body {
   border-width: 2px;
 }
 .navigation-bar .sub-menu .sub-menu-component > .sub-menu-request {
+  cursor: default;
   padding: 0;
   margin: 0;
 }

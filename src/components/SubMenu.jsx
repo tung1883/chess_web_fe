@@ -1,25 +1,31 @@
-import React, { useEffect } from "react";
-import { FaUserAlt, FaChessPawn, FaRobot, FaAward, FaShapes, FaEnvelope, FaCheckSquare } from 'react-icons/fa'
-import { FaSquareXmark } from 'react-icons/fa6'
+import { useContext } from "react";
+import { FaUserAlt, FaChessPawn, FaRobot, FaAward, FaShapes, FaEnvelope, FaCheckSquare, FaArrowLeft, FaPuzzlePiece} from 'react-icons/fa'
+import { FaSquareXmark, FaMagnifyingGlass } from 'react-icons/fa6'
 
 import { hasRequestToRender, requestActionHandler } from "../containers/RequestControl";
 import { timerParser } from "../containers/Request";
+import { logOut } from "../App";
+import { CurrentUserContext } from "../Contexts";
 
 export default function SubMenu(params) {
+    const { setUser } = useContext(CurrentUserContext)
+
+    switch (params.parent) {
+        case 'game':
+            return <GameSubMenu {...params}/>
+        case 'user':
+            return <UserSubMenu setUser={setUser}/>  
+        case 'training':
+            return <TrainingSubMenu {...params}/>  
+        default:
+            return <></>
+    }
+}
+
+const GameSubMenu = (params) => {
     const { requestList } = params
 
-    //set the request list container to invisble if there are no request
-    useEffect(() => {
-        const requestListComp = document.getElementsByClassName('sub-menu-request')[0]
-
-        if (!hasRequestToRender(requestList, 'sub-menu')) {
-            requestListComp.style.display = 'none'
-        } else {
-            requestListComp.style.display = 'block'    
-        } 
-    }, [requestList])
-
-    const subMenuRequestRender = (req) => {
+    const requestRender = (req) => {
         if (req.rendered.subMenu || req.declined) return
 
         const oppUser = (req.receiver === req.wp) ? req.bu : req.wu
@@ -52,18 +58,38 @@ export default function SubMenu(params) {
 
     return (
         <div className="sub-menu-component sub-menu-game">
-            <div className='sub-menu-request'>
-                <div className='sub-menu-request-header'>
-                    <FaEnvelope></FaEnvelope>Pending Request</div>
-                <div className='sub-menu-request-body'>
-                    {requestList.map(subMenuRequestRender)}
-                </div>
-                <div className='horizontal-line'></div>
-            </div>
+            {hasRequestToRender(requestList, 'sub-menu') && 
+                <div className='sub-menu-request'>
+                    <div className='sub-menu-request-header'>
+                        <FaEnvelope></FaEnvelope>Pending Request</div>
+                    <div className='sub-menu-request-body'>
+                        {requestList.map(requestRender)}
+                    </div>
+                    <div className='horizontal-line'></div>
+                </div>}
             <div><FaChessPawn></FaChessPawn>New Game</div>
             <div><FaRobot></FaRobot>Computer</div>
             <div><FaAward></FaAward>Tournament</div>
             <div><FaShapes></FaShapes>Special Variants</div>
+        </div>
+    )
+}
+
+const UserSubMenu = (params) => {
+    const { setUser } = params
+    return (
+        <div className="sub-menu-component sub-menu-user">
+            <div><FaUserAlt></FaUserAlt>Profile</div>
+            <div onClick={() => logOut(setUser)}><FaArrowLeft ></FaArrowLeft >Log Out</div>
+        </div>
+    )
+}
+
+const TrainingSubMenu = (params) => {
+    return (
+        <div className="sub-menu-component sub-menu-user">
+            <div><FaPuzzlePiece></FaPuzzlePiece>Puzzles</div>
+            <div><FaMagnifyingGlass ></FaMagnifyingGlass >Game Analysis</div>
         </div>
     )
 }

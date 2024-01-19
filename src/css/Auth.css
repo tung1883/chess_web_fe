@@ -3,6 +3,10 @@
   margin: 0;
 }
 
+input:-webkit-autofill {
+  box-shadow: 200px 200px 100px #272522 inset;
+}
+
 .background {
   background-image: url("../../public/assets/poster.jpg");
   width: 100vw;
@@ -12,7 +16,7 @@
   align-items: center;
 }
 
-.login-form {
+.auth-form {
   margin-left: 5em;
   margin-top: auto;
   margin-bottom: auto;
@@ -24,23 +28,23 @@
   align-items: center;
   background-color: #312e2b;
 }
-.login-form * {
+.auth-form * {
   font-family: system-ui, Arial;
   color: white;
   font-weight: 800;
 }
-.login-form > * {
+.auth-form > * {
   width: 25em;
 }
-.login-form > * + * {
+.auth-form > * + * {
   margin-bottom: 1.5em;
   border-radius: 5px;
 }
-.login-form .chess-logo {
+.auth-form .chess-logo {
   height: 8em;
   width: 8em;
 }
-.login-form .input-container {
+.auth-form .input-container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -48,43 +52,42 @@
   border-radius: 5px;
   background-color: #272522;
 }
-.login-form .input-container > .logo {
+.auth-form .input-container > .logo {
   padding-left: 0.5em;
   padding-right: 0.5em;
   font-size: 150%;
 }
-.login-form .input-container > input {
+.auth-form .input-container > input {
   width: 100%;
   border: none;
-  border-radius: 5px;
   background-color: #272522;
   outline: none;
   font-weight: bold;
   font-size: 100%;
 }
-.login-form #see-pwd-logo {
+.auth-form #see-pwd-logo {
   padding-left: 0.5em;
   margin-right: 0.5em;
   cursor: pointer;
   font-size: 120%;
 }
-.login-form .other-actions {
+.auth-form .other-actions {
   position: relative;
   display: flex;
 }
-.login-form .other-actions * {
+.auth-form .other-actions * {
   font-weight: 500;
   font-size: 85%;
 }
-.login-form .other-actions #rmb-me .checkbox {
+.auth-form .other-actions #rmb-me .checkbox {
   margin-right: 0.5em;
 }
-.login-form .other-actions #forgot-pwd {
+.auth-form .other-actions #forgot-pwd {
   position: absolute;
   right: 0;
 }
-.login-form button {
-  margin-top: 2em;
+.auth-form button {
+  margin-top: 1em;
   height: 4em;
   width: 30em;
   background-color: #272522;
@@ -94,20 +97,28 @@
   border-width: 0 0 2px 0;
   cursor: pointer;
 }
-.login-form button span {
+.auth-form button span {
   font-size: 150%;
 }
-.login-form button:hover {
+.auth-form button:hover {
   filter: brightness(80%);
 }
-.login-form .sign-up {
-  margin-top: 3em;
+.auth-form #footer {
+  margin-top: 0.5em;
+}
+.auth-form #footer #msg {
+  font-weight: 500;
+  font-size: 85%;
+  width: 100%;
+  margin-bottom: 1.5em;
+}
+.auth-form #footer .sign-up {
   text-align: center;
   font-weight: 500;
   font-size: 80%;
 }
-.login-form .sign-up span {
+.auth-form #footer .sign-up span {
   cursor: pointer;
   font-weight: 500;
   font-weight: 600;
-}/*# sourceMappingURL=Login.css.map */
+}/*# sourceMappingURL=Auth.css.map */
