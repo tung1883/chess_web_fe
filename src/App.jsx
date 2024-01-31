@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, HashRouter, BrowserRouter } from 'react-router-dom';
 import axios from "axios";
 import { CurrentUserContext, DocumentTitleContext } from "./Contexts";
 
@@ -17,6 +17,7 @@ export default function App() {
   const EXPIRE_CHECK_GAP = 5 * 1000 //gap time between each cookie expiration check
 
   useEffect(() => {
+    console.log(user)
     //set up user intially and also check for expiration periodically
     const checkUser = () => {
       const currentUser = getUserFromCookies()
@@ -38,7 +39,6 @@ export default function App() {
         <BrowserRouter>
           <Routes path='/'>
             <Route path='/' element ={(user) ? <Main/> : <Auth/>}/>
-            <Route path='/main' element={<title>main</title>} title='main'></Route>
           </Routes>
         </BrowserRouter>
       </CurrentUserContext.Provider>
