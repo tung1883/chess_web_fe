@@ -15,8 +15,8 @@ import { textParser } from "./components/chessboard/BoardParser";
 import RequestPopUp from "./containers/RequestPopUp";
 import Request from "./containers/Request";
 import { ResultPopUp } from "./containers/ResultPopUp";
-import { setGameEnd, acceptRequest, getOppMove, playMove, requestReceiver, sendRequest, sentRequestListener, 
-    parsedTimeRecord, sendGameResult} from "./containers/StateControl";
+import { setGameEnd, acceptRequest, getOppMove, playMove, requestReceiver, sentRequestListener, 
+    parsedTimeRecord, sendGameResult, deleteRequest} from "./containers/StateControl";
 import { CurrentUserContext, DocumentTitleContext } from "./Contexts";
 
 export default function Main() {
@@ -26,17 +26,14 @@ export default function Main() {
     //4 states: (1) listen -> request, (2) accept request, (3) request, (4) play
     const [state, setState] = useState({
         play: null,
-        listen: {
-            requestList: []
-        },
-        accept: null,
-        request: []
+        accept: null
     })
     const stateSetUp = useRef(0) //use to set up state at first
 
     //request format: user ID, username, elo (not yet), time format (eg: "(15:10)")
     const [subMenuParams, setSubMenuParams] = useState(null) 
-    const [requestList, setRequestList] = useState([])
+    const [receivedRequests, setReceivedRequests] = useState([])
+    const [userRequest, setUserRequest] = useState(null)
     const [boardInfo, setBoardInfo] = useState({
         board: setUpBoard(),
         curMove: 0,
@@ -54,14 +51,20 @@ export default function Main() {
 
     useEffect(() => { 
         stateHandler('play')
-        stateHandler('listen')
         stateHandler('accept')
-        stateHandler('request')
 
         return () => {
             timeouts.current.forEach((timer) => clearTimeout(timer))
         }
     }, [state])
+
+    useEffect(() => { 
+        userRequestHandler()    
+    }, [userRequest])
+
+    useEffect(() => {
+        receivedRequestListener()
+    }, [])
 
     useEffect(() => {
         updateMessage()
@@ -178,15 +181,11 @@ export default function Main() {
             })
 
             const gameInfo = getGameRequest.data.game
-
+            
             if (!gameInfo) {
-                let requestList = res.data.requestList
-                requestList.forEach((request) => {
-                    request.waiting = true
-                    request.timer = parsedTimeRecord(request.timer)
-                })
-                setState({...state, request: requestList})
+                setUserRequest(res.data.request)
             } else {
+                deleteRequest({reqID: res.data.request.reqID})
                 const { gameID, wp, bp, timer, time_spent : time, turn, 
                     started_time: startedTime, result } = gameInfo
                 let oppUsernameRequest = await axios({
@@ -210,7 +209,7 @@ export default function Main() {
                     }
                 }
                 
-                setRequestList([])
+                setReceivedRequests([])
                 setBoardInfo(newBoardInfo)
                 setState({
                     ...state, 
@@ -231,12 +230,14 @@ export default function Main() {
         if (stateType === 'play' && state.play) {
             if (state.play.end) {
                 if (!state.play.waiting) {
+                    console.log('here')
                     let { gameID, wp, bp, result } = state.play
                     let errorCounter = 0
                     let resultSender = await sendGameResult(gameID, wp, bp, result)
 
                     while (!resultSender && errorCounter < 5) {
                         resultSender = await sendGameResult(gameID, wp, bp, result)
+                        errorCounter += 1
                     }
                 }
                 
@@ -276,16 +277,9 @@ export default function Main() {
 
                 setState({...state, play: { ...state.play, move: null, waiting: true }})
             }
-
-            console.log(state.play)
         }
 
         if (state.play && !state.play.end) return
-
-        if (stateType === 'listen' && state.listen) { 
-            setRequestList([...await requestReceiver(requestList)])
-            timeouts.current.push(setTimeout(() => stateHandler('listen'), 5 * 1000))
-        }
 
         if (stateType === 'accept' && state.accept) {
             let newGame = await acceptRequest(user.id, state.accept)
@@ -295,30 +289,29 @@ export default function Main() {
                 return 
             } 
 
-            setRequestList([])
+            setReceivedRequests([])
             setBoardInfo({ board: setUpBoard(), curMove: 0, moveList: []})
             setState({...state, play: newGame, accept: null})  
         }
+    }
 
-        if (stateType === 'request' && state.request.length !== 0) {
-            state.request.forEach(async (request, index) => {
-                if (!request.waiting) {
-                    const updatedRequest = await sendRequest(request)
-                    if (!updatedRequest) return
+    const userRequestHandler = async () => {
+        if (userRequest) {
+            const listener = await sentRequestListener({userID: user.id, request: userRequest})
 
-                    return state.request[index] = updatedRequest
-                }
+            if (!listener) return setUserRequest(null)
 
-                const listener = await sentRequestListener(user.id, index, state.request)
-                
-                if (listener.playState) {
-                    setState({ ...state, play: listener.playState })
-                    setBoardInfo({ board: setUpBoard(), curMove: 0, moveList: [] })
-                } 
-            })
-
-            timeouts.current.push(setTimeout(() => stateHandler('request'), 1000))
+            if (listener.playState) {
+                setState({ ...state, play: listener.playState })
+                setBoardInfo({ board: setUpBoard(), curMove: 0, moveList: [] })
+                setUserRequest(null)
+            } 
         }
+    }
+
+    const receivedRequestListener = async () => {
+        setReceivedRequests([...await requestReceiver(receivedRequests)])
+        setTimeout(receivedRequestListener, 3000)
     }
 
     const exitPlayState = () => {
@@ -333,7 +326,7 @@ export default function Main() {
         if (e.type === 'mouseover') {
             switch (parent) {
                 case 'game':
-                    setSubMenuParams({requestList, parent})
+                    setSubMenuParams({state, setState, receivedRequests, setReceivedRequests, parent})
                     break;
                 case 'user':
                     setSubMenuParams({setUser, parent})
@@ -355,10 +348,10 @@ export default function Main() {
     return (<>
         <nav className='navigation-bar'>
             <header>
-            <center onMouseOver={(e) => {subMenuHandler(e, 'user')}} onMouseOut={(e) => subMenuHandler(e)}>
-                <img className='logo' src={process.env.PUBLIC_URL + '/assets/logo.png'} alt='logo'></img>
-                <div className='username'>{(user) ? user.name : 'Guest'}</div>
-            </center>
+                <center onMouseOver={(e) => {subMenuHandler(e, 'user')}} onMouseOut={(e) => subMenuHandler(e)}>
+                    <img className='logo' src={process.env.PUBLIC_URL + '/assets/logo.png'} alt='logo'></img>
+                    <div className='username'>{(user) ? user.name : 'Guest'}</div>
+                </center>
             </header>
             <li className='menu-bar'>
                 <ul onMouseOver={(e) => subMenuHandler(e, 'game')} onMouseOut={(e) => subMenuHandler(e)}>
@@ -404,15 +397,17 @@ export default function Main() {
                         isStopped={timerStop(getSideID(true))}/>
                 </div>
                 {state?.play?.end && 
-                    <ResultPopUp userSide={getSide(false)} state={state} setState={setState} exitPlayState={exitPlayState}/>} 
+                    <ResultPopUp userSide={getSide(false)} state={state} setState={setState} exitPlayState={exitPlayState}
+                        userRequest={userRequest} setUserRequest={setUserRequest}
+                    />} 
             </div>
 
             <div id='sidebar'>
                 {(state.play) ? <MoveList className='move-list-container' 
-                    boardInfo={boardInfo} setBoardInfo={setBoardInfo} state={state} setState={setState}
-                    exitPlayState={exitPlayState}    
-                ></MoveList>
-                : <Request user={user} state={state} setState={setState}></Request>}
+                    boardInfo={boardInfo} setBoardInfo={setBoardInfo} state={state} setState={setState} 
+                    userRequest={userRequest} setUserRequest={setUserRequest}
+                    exitPlayState={exitPlayState}/> 
+                    : <Request userRequest={userRequest} setUserRequest={setUserRequest}/>}
                 <div className="chat">
                     <div className="chat-output">
                         <div className="message-container">
@@ -423,21 +418,17 @@ export default function Main() {
                                     {(msg.userID == user.id) ? msg.message : (': ' + msg.message)}
                                 </div>)}
                         </div>
-                        <div className='dummy-div'></div> {/* div to keep scrolling to the bottom*/}
+                        <div className='dummy-div'/> {/* div to keep scrolling to the bottom*/}
                         <div className="game-info">
                             <div>NEW GAME</div>
                             <div>{user && user.name} - {getOppUsername()}</div>
                         </div>  
                     </div>
-                    <div className="chat-input">
-                    <input type="text" placeholder={'Message here!'} onKeyDown={addMessage}/>
-                    </div>
+                    <div className="chat-input"><input type="text" placeholder={'Message here!'} onKeyDown={addMessage}/></div>
                 </div>
             </div>
         </div>
 
-        <RequestPopUp requestList={requestList} setRequestList={setRequestList} 
-            state={state} setState={setState}></RequestPopUp>
+        <RequestPopUp receivedRequests={receivedRequests} setReceivedRequests={setReceivedRequests} state={state} setState={setState}/>
     </>)
 }
-

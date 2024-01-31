@@ -1,4 +1,5 @@
 import axios from "axios"
+import { delay } from "../functionalities/delayPromise"
 
 export async function getOppMove(gameID, curMoveNumber) {
     try {
@@ -66,14 +67,13 @@ export async function requestReceiver(requestList) {
         })
         const { requestList: newList } = getRequestList.data
         
-        //only add new request to the request list
         newList.forEach((newReq) => {
-            if (requestList.find((oldReq) => oldReq.reqID === newReq.reqID)) { return }
+            let oldRequest = requestList.find((oldReq) => oldReq.reqID === newReq.reqID)
             newReq.timer = parsedTimeRecord(newReq.timer)
-            requestList.push({ ...newReq, rendered: { subMenu: false, popUp: false } })
+            newReq.rendered = (oldRequest) ? oldRequest.rendered : { subMenu: false, popUp: false }
         })
         
-        return [ ...requestList ]
+        return newList
     } catch (err) {
         console.log(err)
         return requestList
@@ -104,35 +104,39 @@ export async function acceptRequest(userID, gameInfo) {
 }
 
 //request state
-export async function sentRequestListener(userID, requestIndex, requestList) {
+export async function sentRequestListener(params) {
+    let { userID, request, counter } = params
+    counter = (counter) ? counter + 1 : 0
+
     try {
-        const request = requestList[requestIndex]
         const updatedRequest = (await axios({
             method: 'get',
             url: '/game/request/' + request.reqID
         })).data
 
-        //check if request is deleted, then delete it from the request list
-        if (!updatedRequest) return { requestList: requestList.splice(requestIndex, 1) }
-        if (!updatedRequest.gameID) return { requestList }
+        if (!updatedRequest || updatedRequest.requestDeleted) return null
+        if (!updatedRequest.gameID) {
+            return (counter < 30) ? delay(1000).then(() => sentRequestListener(params)) : deleteRequest({reqID: request.reqID})
+        }   
 
-        const { wp, wu, bp, bu, timer } = request        
-
-        //when a request is accepted, decline all requests
-        requestList.forEach((declinedRequest) => { declineRequest(declinedRequest.reqID) })
+        const { wp, wu, bp, bu, timer } = request   
+        
+        deleteRequest({request})
 
         return {
-            requestList: [],
             playState: setPlayState(userID, { wp, wu, bp, bu, timer, 
                 gameID: updatedRequest.gameID, startedTime: updatedRequest.startedTime })
         }
     } catch (err) {
         console.log(err)
-        return { requestList: requestList.splice(requestIndex, 1) }
+        if (counter < 5) return delay(1000).then(() => sentRequestListener({...params}))
     }
 }
 
-export async function sendRequest(request) {
+export async function sendRequest(params) {
+    let { request, counter } = params
+    counter = (counter) ? counter + 1: 0
+
     return axios({
         method: 'post',
         url: '/game/request',
@@ -140,14 +144,20 @@ export async function sendRequest(request) {
             ...request, timer: getTimerFormat(request.timer)
         }
     }).then((res) => {
-        return { ...request, waiting: true, reqID: res.data.reqID }
+        return { ...request, reqID: res.data.reqID }
     }).catch((err) => {
         console.log(err)   
+        if (counter < 5) return delay(1000).then(() => sendRequest({request, counter}))
         return null
     })
 }
 
-export function declineRequest(reqID) {
+export function deleteRequest(params) {
+    let { reqID, counter } = params
+    counter = (counter) ? counter + 1 : 0
+
+    if (!reqID) return null
+
     axios({
         method: 'post',
         url: '/game/request/res',
@@ -156,7 +166,7 @@ export function declineRequest(reqID) {
             action: 0
         }
     }).catch((err) => {
-        console.log(err)
+        if (counter < 5) return delay(5000).then(() => deleteRequest({reqID, counter}))
     })
 }
 
@@ -174,7 +184,6 @@ export async function sendRematchRequest(request) {
             updatedRequest = await sendRequest(request)
         }
 
-        console.log(updatedRequest)
         return updatedRequest
     } catch (err) {
         console.log(err)

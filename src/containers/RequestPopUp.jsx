@@ -4,7 +4,7 @@ import { requestActionHandler } from './RequestControl'
 import { timerParser } from './Request'
 
 export default function RequestPopUp(params) {
-    const { requestList } = params
+    const { receivedRequests } = params
 
     const popUpRequestRender = (req) => {
         if (req.rendered.popUp || req.actionClicked) return
@@ -41,7 +41,7 @@ export default function RequestPopUp(params) {
 
     return (
         <div className="request-pop-up-container">
-            {requestList.map(popUpRequestRender)}
+            {receivedRequests.map(popUpRequestRender)}
         </div>
     )
 }

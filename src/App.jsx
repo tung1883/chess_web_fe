@@ -10,11 +10,10 @@ import { getCookie, deleteCookie } from "./functionalities/cookie";
 
 export default function App() {
   axios.defaults.withCredentials = true;
-  axios.defaults.baseURL = "http://localhost:8000/"
+  axios.defaults.baseURL = "https://kqth8v9b-8000.asse.devtunnels.ms/"
 
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState('Play Chess') //set document title
-  const documentTitle = useRef('Chess') 
   const EXPIRE_CHECK_GAP = 5 * 1000 //gap time between each cookie expiration check
 
   useEffect(() => {

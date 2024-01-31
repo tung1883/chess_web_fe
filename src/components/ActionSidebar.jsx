@@ -1,11 +1,27 @@
-import { useState } from 'react'
-
-import './ActionSidebar.css'
+import { useState, useRef, useEffect } from 'react'
 import { FaHandshake, FaRegFlag } from 'react-icons/fa'
+import { ImCross } from 'react-icons/im'
+import './ActionSidebar.css'
 
-export default function ActionSidebar({ state, setState, exitPlayState }) {
+import { sendRequest, deleteRequest } from '../containers/StateControl'
+import LoadingSpinner from './LoadingSpinner'
+
+export default function ActionSidebar({ state, exitPlayState, userRequest, setUserRequest }) {
     const [clicked, setClicked] = useState({ resign: false, draw: false })
+    const [currentRequestID, setCurrentRequestID] = useState(null)
+    const [mouseOverBttn, setMouseOverBttn] = useState(false)
     
+    //if request is declined, stop the spinner
+    useEffect(() => {
+        if (!userRequest && currentRequestID) {
+            setCurrentRequestID(null)
+        }
+
+        if (userRequest) {
+            setCurrentRequestID(userRequest.reqID)
+        }
+    }, [userRequest])
+
     const handleResign = () => {
         console.log('resign')
     }
@@ -14,15 +30,22 @@ export default function ActionSidebar({ state, setState, exitPlayState }) {
 
     }
 
-    const handleRematch = () => {   
+    const sendRematch = async () => {   
         let { wp, wu, bp, bu, timer } = state.play
-
-        state.request.push({
+        const rematchRequest = {
             timer: { format: timer.format },
             wp: bp, wu: bu, bp: wp, bu: wu
-        })
+        }
 
-        setState({...state})
+        const sentRequest = await sendRequest({request: rematchRequest})
+        setUserRequest(sentRequest)
+        setCurrentRequestID(sentRequest.reqID)
+    }
+
+    const declineRequest = () => {
+        deleteRequest({reqID: currentRequestID})
+        setUserRequest(null)
+        setCurrentRequestID(null)
     }
 
     return <div className='action-sidebar'>
@@ -49,7 +72,24 @@ export default function ActionSidebar({ state, setState, exitPlayState }) {
                 </div>}
             </div>
         </> : <>
-            <div onClick={handleRematch}><span>Rematch</span></div>
+            <div 
+                onClick={(currentRequestID) ? () => {
+                        setUserRequest(null)
+                        deleteRequest({reqID: currentRequestID})
+                        setCurrentRequestID(null)
+                    } : sendRematch}
+                    onMouseOver={() => setMouseOverBttn(true)}
+                    onMouseOut={() => setMouseOverBttn(false)}
+            >
+                {(currentRequestID) ? 
+                    <span>
+                        {(mouseOverBttn) ? <ImCross style={{fontWeight: "bold", width: '0.7em', height: '0.7em'}} 
+                            onClick={declineRequest}/> 
+                            : <center><LoadingSpinner width={12} height={12}/></center>}
+                    </span>
+                    : <span>Rematch</span>
+                }
+            </div>
             <div onClick={exitPlayState}><span>New Game</span></div>
         </>}
     </div>

@@ -62,8 +62,10 @@ export default function Login() {
                     pwd: pwd,
                 }
             }).then(() => {
+                console.log('here')
                 setUser({id: getCookie('userID'), name: getCookie('user')})
             }).catch((err) => {
+                console.log(err)
                 return setMsg({
                     text: (err?.response?.data) ? err.response.data : 'Error when logging in. Please try again later...',
                     visibility: 'visible',

@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { FaUserAlt , FaQuestion} from 'react-icons/fa'
 import { FaArrowLeft, FaChessBoard, FaChessKing, FaRegChessKing} from 'react-icons/fa6'
-import { timeToText } from "../components/Timer";
-import LoadingSpinner from '../components/LoadingSpinner'
+import { ImCross } from "react-icons/im";
 
+import * as Timer from "../components/Timer";
+import LoadingSpinner from '../components/LoadingSpinner'
 import './Request.css'
 import { CurrentUserContext } from "../Contexts";
+import { randomInteger } from "../functionalities/randomInteger";
+import { deleteRequest, sendRequest } from "./StateControl";
 
 const DEFAULT_TIME = {
     min: '0',
@@ -14,39 +17,50 @@ const DEFAULT_TIME = {
     incre: '0'
 }
 
-export default function Request({ state, setState }) {
-    const [friendList, setFriendList] = useState([])
-    const [requestData, setRequestData] = useState({
-        oppID: null,
-        oppUsername: null,
-        side: 'random',
-        timer: null
-    })
-    const timeouts = useRef([])
-    const isRequesting = useRef(false)
-    const { user } = useContext(CurrentUserContext)
+const DEFAULT_RAW_REQUEST = {
+    oppID: null,
+    oppName: null,
+    side: 'random',
+    timer: null
+}
 
-    const getUserList = () => {
+export default function Request({ userRequest, setUserRequest }) {
+    const { user } = useContext(CurrentUserContext)
+    const [friendList, setFriendList] = useState([])
+    const [rawRequest, setRawRequest] = useState(DEFAULT_RAW_REQUEST)
+    const timeouts = useRef([])
+    const currentRequestID = useRef(null)
+    const [mouseOverBttn, setMouseOverBttn] = useState(false)
+
+    const getFriendList = () => {
         axios({
             method: 'get',
             url: 'http://localhost:8000/users',
         }).then((res) => {
             const tempFriendList = []
-            res.data.map((userObj) => tempFriendList.push({id: userObj.userID, username: userObj.user}))
+            res.data.map((userObj) => tempFriendList.push({id: userObj.userID, name: userObj.user}))
             setFriendList(tempFriendList.filter((friend) => {
-                if (user) return friend.username !== user.name
+                if (user) return friend.name !== user.name
             }))
         })
         
-        timeouts.current.push(setTimeout(getUserList, 20 * 1000))
+        timeouts.current.push(setTimeout(getFriendList, 20 * 1000))
     }
 
     useEffect(() => {
-        getUserList()   
+        getFriendList()   
         return () => {
             timeouts.current.forEach((timer) => clearTimeout(timer))
         }
     }, [])
+
+    //if request is declined, stop the spinner
+    useEffect(() => {
+        // console.log(userRequest, currentRequestID.current)
+        if (!userRequest && currentRequestID.current) {
+            currentRequestID.current = null
+        }
+    }, [userRequest])
     
     const isNumber = (e) => {
         var charCode = (e.which) ? e.which : e.keyCode
@@ -58,45 +72,45 @@ export default function Request({ state, setState }) {
         e.preventDefault()
     }
     
-    const requestSubmit = () => {
+    const requestSubmit = async () => {
         const timerChild = document.getElementsByClassName('timer')[0].childNodes
-        isRequesting.current = true
         let wp = null, wu = null, bp = null, bu = null
-        switch (requestData.side) {
+        switch (rawRequest.side) {
             case 'white':
                 wp = parseInt(user.id)
                 wu = user.name
-                bp = parseInt(requestData.oppID)
-                bu = requestData.oppUsername
+                bp = parseInt(rawRequest.oppID)
+                bu = rawRequest.oppName
                 break
             case 'black':
                 bp = user.id
                 bu = user.name
-                wp = parseInt(requestData.oppID)
-                wu = requestData.oppUsername
+                wp = parseInt(rawRequest.oppID)
+                wu = rawRequest.oppName
                 break
             default: //random
                 if (randomInteger(0, 1)) {
                     //1 -> white
                     wp = parseInt(user.id)
                     wu = user.name
-                    bp = parseInt(requestData.oppID)
-                    bu = requestData.oppUsername
+                    bp = parseInt(rawRequest.oppID)
+                    bu = rawRequest.oppName
                 } else {
                     bp = parseInt(user.id)
                     bu = user.name
-                    wp = parseInt(requestData.oppID)
-                    wu = requestData.oppUsername
+                    wp = parseInt(rawRequest.oppID)
+                    wu = rawRequest.oppName
                 }
         }
 
-        state.request.push({ wp, wu, bp, bu,
+        const sentRequest = await sendRequest({request: { wp, wu, bp, bu,
             timer: {
                 format: getTimeFormat(timerChild[0].value, timerChild[2].value, timerChild[4].value)
             }
-        })
+        }})
         
-        setState({...state})
+        currentRequestID.current = sentRequest?.reqID
+        setUserRequest(sentRequest)
     }
 
     const getTimeFormat = (min, sec, incre) => {
@@ -113,7 +127,7 @@ export default function Request({ state, setState }) {
     const chooseSide = (e) => {
         document.elementsFromPoint(e.clientX, e.clientY).map((ele) => {
             if (ele.tagName === 'svg') {
-                requestData.side = ele.classList[0] 
+                rawRequest.side = ele.classList[0] 
                 const parent = e.target.closest('.choose-side')
                 for (let i = 0; i < parent.childNodes.length; i++) {
                     if (parent.childNodes[i] === ele) {
@@ -128,32 +142,33 @@ export default function Request({ state, setState }) {
         })
     }
 
+    const declineRequest = () => {
+        deleteRequest({reqID: currentRequestID.current})
+        setRawRequest(DEFAULT_RAW_REQUEST)
+        setUserRequest(null)
+        currentRequestID.current = null
+    }
+
     return (
         <div className="upper">
             <div className="upper-top">
                 <FaChessBoard style={{paddingRight: '0.5em'}}></FaChessBoard>
                 Play with Your Friends
             </div>
-            {!requestData.oppUsername && 
-                <FriendList friendList={friendList} requestData={requestData} 
-                    setRequestData={setRequestData}></FriendList>}
-            {requestData.oppUsername && 
+            {!rawRequest.oppName && 
+                <FriendList friendList={friendList} setRawRequest={setRawRequest}/>}
+            {rawRequest.oppName && 
                 <div className='requesting-component'>
                     <div className='requesting-header'>
                         <div className="back-button-container">
-                            <FaArrowLeft className='back-button' 
-                                onClick={() => {
-                                    requestData.oppID = null
-                                    requestData.oppUsername = null
-                                    setRequestData({...requestData})
-                                }}></FaArrowLeft>
+                            <FaArrowLeft className='back-button' onClick={declineRequest}/>
                         </div>
                         <div className='requesting-text'>Play</div>
-                        <div className="dummyFlexBox"></div>
+                        <div className="dummyFlexBox"/>
                     </div>
                     <div className="requesting-body">
                         <FaUserAlt className='requesting-avatar'></FaUserAlt>
-                        <div className='requesting-user'>{requestData.oppUsername}</div>
+                        <div className='requesting-user'>{rawRequest.oppName}</div>
                         <div className='timer'>
                             <input type="text" onKeyDown={isNumber} placeholder="min"/>
                             <text>:</text> 
@@ -167,10 +182,21 @@ export default function Request({ state, setState }) {
                             <FaRegChessKing className='black'></FaRegChessKing>
                         </div>
                         <button
-                            onClick={requestSubmit}
+                            onClick={(currentRequestID.current) ? () => {
+                                setUserRequest(null)
+                                deleteRequest({reqID: currentRequestID.current})
+                                currentRequestID.current = null
+                            } : requestSubmit}
+                            onMouseOver={() => setMouseOverBttn(true)}
+                            onMouseOut={() => setMouseOverBttn(false)}
                         >
-                            {(isRequesting.current === false) ? <span>Request</span>
-                                : <span><LoadingSpinner width={15} height={15}></LoadingSpinner></span>
+                            {(currentRequestID.current) ? 
+                                <span>
+                                    {(mouseOverBttn) ? <ImCross style={{fontWeight: "bold"}} 
+                                        onClick={declineRequest}/> 
+                                        : <LoadingSpinner width={15} height={15}/>}
+                                </span>
+                                : <span>Request</span>
                             }
                         </button>
                     </div>
@@ -180,7 +206,7 @@ export default function Request({ state, setState }) {
     )
 }
 
-function FriendList({ friendList, requestData, setRequestData }) {
+function FriendList({ friendList, setRawRequest }) {
     return (
         <div className='friend-list'>
             <div className='friend-list-header'>Friends <span>{friendList.length}</span></div>
@@ -192,12 +218,10 @@ function FriendList({ friendList, requestData, setRequestData }) {
                     return (    
                         <div className={componentClass}
                             onClick={() => {
-                                requestData.oppUsername = friend.username
-                                requestData.oppID = friend.id
-                                setRequestData({...requestData})
+                                setRawRequest({oppName: friend.name, oppID: friend.id})
                             }}>
                             <span className='friend-index'>{index + 1}.</span>
-                            <text className='friend-name'>{friend.username}</text>
+                            <text className='friend-name'>{friend.name}</text>
                             <span className='friend-elo'>(1500)</span>
                         </div>
                     )
@@ -207,13 +231,9 @@ function FriendList({ friendList, requestData, setRequestData }) {
     )
 }
 
-function randomInteger(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 export function timerParser(timer) {
     let { time, incre } = timer.format
 
-    if (incre) return timeToText(time) + ` (+${incre})`
-    return timeToText(time)
+    if (incre) return Timer.timeToText(time) + ` (+${incre})`
+    return Timer.timeToText(time)
 }

@@ -16,14 +16,14 @@ export default function SubMenu(params) {
         case 'user':
             return <UserSubMenu setUser={setUser}/>  
         case 'training':
-            return <TrainingSubMenu {...params}/>  
+            return <TrainingSubMenu/>  
         default:
             return <></>
     }
 }
 
 const GameSubMenu = (params) => {
-    const { requestList } = params
+    const { receivedRequests } = params
 
     const requestRender = (req) => {
         if (req.rendered.subMenu || req.declined) return
@@ -39,18 +39,16 @@ const GameSubMenu = (params) => {
 
         return (
             <div id={'sub-menu-request-' + req.reqID} className="sub-menu-request-component">
-                <FaUserAlt></FaUserAlt>
+                <FaUserAlt/>
                 <div>
                     <div>{oppUser} (1500)</div>
                     <span>{timerParser(timer)}</span>
                 </div>
                 <div className='sub-menu-request-icon'>
                     <FaCheckSquare style={{color: '#769656'}} onClick={(event) => 
-                        requestActionHandler({...params, event, isAccepted: true, DOMElement: 'sub-menu'})}
-                    ></FaCheckSquare>
+                        requestActionHandler({...params, event, isAccepted: true, DOMElement: 'sub-menu'})}/>
                     <FaSquareXmark onClick={(event) => 
-                        requestActionHandler({...params, event, isAccepted: false, DOMElement: 'sub-menu'})}
-                    ></FaSquareXmark>
+                        requestActionHandler({...params, event, isAccepted: false, DOMElement: 'sub-menu'})}/>
                 </div>      
             </div>   
         )
@@ -58,19 +56,19 @@ const GameSubMenu = (params) => {
 
     return (
         <div className="sub-menu-component sub-menu-game">
-            {hasRequestToRender(requestList, 'sub-menu') && 
+            {hasRequestToRender(receivedRequests, 'sub-menu') && 
                 <div className='sub-menu-request'>
                     <div className='sub-menu-request-header'>
-                        <FaEnvelope></FaEnvelope>Pending Request</div>
+                        <FaEnvelope/>Pending Request</div>
                     <div className='sub-menu-request-body'>
-                        {requestList.map(requestRender)}
+                        {receivedRequests.map(requestRender)}
                     </div>
                     <div className='horizontal-line'></div>
                 </div>}
-            <div><FaChessPawn></FaChessPawn>New Game</div>
-            <div><FaRobot></FaRobot>Computer</div>
-            <div><FaAward></FaAward>Tournament</div>
-            <div><FaShapes></FaShapes>Special Variants</div>
+            <div><FaChessPawn/>New Game</div>
+            <div><FaRobot/>Computer</div>
+            <div><FaAward/>Tournament</div>
+            <div><FaShapes/>Special Variants</div>
         </div>
     )
 }
